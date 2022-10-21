@@ -4,7 +4,7 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyPcACN8PrBE8yv3iQ5tIHWb",
+      "authorship_tag": "ABX9TyN+5VEFg7v04cwStjJ9KomW",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -28,12 +28,38 @@
     },
     {
       "cell_type": "code",
-      "execution_count": null,
+      "execution_count": 1,
       "metadata": {
         "id": "-Hd71FEuk1yX"
       },
       "outputs": [],
-      "source": []
+      "source": [
+        "def forecast_distribution(self, data, **kwargs):\n",
+        "        ret = []\n",
+        "\n",
+        "        smooth = kwargs.get(\"smooth\", \"KDE\")\n",
+        "        alpha = kwargs.get(\"alpha\", None)\n",
+        "\n",
+        "        uod = self.get_UoD()\n",
+        "\n",
+        "        for k in np.arange(self.order, len(data)):\n",
+        "\n",
+        "            sample = data[k-self.order : k]\n",
+        "\n",
+        "            forecasts = self.get_models_forecasts(sample)\n",
+        "\n",
+        "            if alpha is None:\n",
+        "                forecasts = np.ravel(forecasts).tolist()\n",
+        "            else:\n",
+        "                forecasts = self.get_distribution_interquantile(np.ravel(forecasts).tolist(), alpha)\n",
+        "\n",
+        "            dist = ProbabilityDistribution.ProbabilityDistribution(smooth, uod=uod, data=forecasts,\n",
+        "                                                                   name=\"\", **kwargs)\n",
+        "\n",
+        "            ret.append(dist)\n",
+        "\n",
+        "        return ret "
+      ]
     }
   ]
 }
